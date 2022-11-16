@@ -13,18 +13,21 @@ module.exports = {
             throw err;
         });
     },
-
-    createEvent: (args) => {
+    // the resolvers automatically gets args and req as qrguements so we can easily use it
+    createEvent: (args, req) => {
+        if (!req.isAuth) {
+            throw new Error('Unauthenticated!');
+        }
         const event = new Event({
             title: args.eventInput.title,
             description: args.eventInput.description,
             price: +args.eventInput.price,
             date: new Date(args.eventInput.date),
-            creator: '636d22f6d07bd7ecd67c4fb0'
+            creator: req.userId
         })
         return event.save().then(result => {
             createdEvent = transformEvent
-            return User.findById('636d22f6d07bd7ecd67c4fb0');
+            return User.findById(req.userId);
 
         }).then(user => {
             if (!user) {
