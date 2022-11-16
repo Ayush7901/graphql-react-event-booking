@@ -7,7 +7,7 @@ const { dateToString } = require('../../helpers/date');
 
 const user = async userId => {
     try {
-        const user = await User.findById(userId)
+        const user = await User.findById(userId);
         return {
             ...user._doc,
             password: null,
@@ -25,7 +25,8 @@ const events = async eventIds => {
         return events.map(event => {
             return {
                 ...event._doc,
-                creator: user.bind(this, event._doc.creator), date: new Date(event._doc.date).toISOString()
+                creator: user.bind(this, event._doc.creator),
+                date: new Date(event._doc.date).toISOString()
             };
         });
     } catch (err) {

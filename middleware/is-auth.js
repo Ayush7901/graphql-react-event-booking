@@ -9,7 +9,7 @@ module.exports = (req, res, next) => {
         req.isAuth = false;
         return next();
     }
-
+    console.log(2)
     const token = authHeader.split(' ')[1]; // authHeader.split(' ') = [Bearer, gsdahjgads]
     if (!token || token === '') {
         req.isAuth = false;
@@ -17,12 +17,11 @@ module.exports = (req, res, next) => {
     }
     let decodedToken;
     try {
-        jwt.verify(token, 'somesupersecretkey');
+        decodedToken = jwt.verify(token, 'somesuperscretkey');
     }
     catch (err) {
-        throw new Error('Unauthenticated');
+        throw new Error('Unauthenticated !');
     }
-
     req.isAuth = true;
     req.userId = decodedToken.userId;
 

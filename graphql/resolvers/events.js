@@ -14,7 +14,7 @@ module.exports = {
         });
     },
     // the resolvers automatically gets args and req as qrguements so we can easily use it
-    createEvent: (args, req) => {
+    createEvent: async (args, req) => {
         if (!req.isAuth) {
             throw new Error('Unauthenticated!');
         }
@@ -25,24 +25,21 @@ module.exports = {
             date: new Date(args.eventInput.date),
             creator: req.userId
         })
-        return event.save().then(result => {
-            createdEvent = transformEvent
-            return User.findById(req.userId);
-
-        }).then(user => {
+        try {
+            const result = await event.save();
+            createdEvent = transformEvent(result)
+            const user = await User.findById(req.userId);
             if (!user) {
                 throw new Error('No such user exists!');
             }
-            user.createdEvents.push(event);
-            return user.save()
-
-
-        }).then(result => {
+            await user.createdEvents.push(event);
+            await user.save()
             return createdEvent;
-        }).catch(err => {
+        }
+        catch (err) {
             console.log(err)
             throw err;
-        })
+        }
         // return event;
     }
 }
