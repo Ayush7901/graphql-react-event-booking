@@ -9,8 +9,22 @@ const graphQLResolvers = require('./graphql/resolvers/index');
 const isAuth = require('./middleware/is-auth')
 app.use(bodyParser.json());
 
-
+// how to allow Cross Origin Request for that we add som headers in our request
+app.use((req,res,next) => {
+    res.setHeader('Access-Control-Allow-Origin','*');
+    res.setHeader('Access-Control-Allow-Methods','POST, GET, OPTIONS');
+    
+    res.setHeader('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization')
+    if(req.method === 'OPTIONS'){
+        // internal browser request we don't allow it to reach graphql server bcz it can't handle that
+        return res.sendStatus(200);
+    }
+    next();
+})
 app.use(isAuth);
+
+
+
 
 app.use('/graphql', graphqlHTTP({
     schema: graphQLSchema,
