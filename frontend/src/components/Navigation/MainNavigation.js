@@ -1,7 +1,11 @@
 import { NavLink } from "react-router-dom"; // doesn't allow to send another page request but captures the click and renders the dom required
 import './MainNavigation.css'
+import AuthContext from "../../context/auth-context";
+import { useContext } from "react";
 
-const mainNavigation = props => {
+const MainNavigation = props => {
+    const authContext = useContext(AuthContext);
+    // console.log(authContext);
     return (
         <header className="main-navigation">
             <div className="main-naviagtion_logo" >
@@ -9,19 +13,21 @@ const mainNavigation = props => {
             </div>
             <div className="main-navigation_items" >
                 <ul>
-                    <li>
+                    {!authContext.authState.token && <li>
                         <NavLink to="/auth">Login</NavLink>
-                    </li>
+                    </li>}
                     <li>
                         <NavLink to="/events">Events</NavLink>
                     </li>
-                    <li>
+                    {authContext.authState.token && <li>
                         <NavLink to="/bookings">Bookings</NavLink>
-                    </li>
+                    </li>}
+
                 </ul>
             </div>
         </header>
 
+
     );
 }
-export default mainNavigation;
+export default MainNavigation;
