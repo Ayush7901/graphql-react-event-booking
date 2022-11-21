@@ -87,7 +87,7 @@ const AuthPage = () => {
     return (
         <div className={classes.authcontent}>
             <Card>
-                <form className={classes.from} onSubmit={submitHandler}>
+                <form className={classes.form} onSubmit={submitHandler}>
                     <div className={classes.control}>
                         <label htmlFor='email'>Email</label>
                         <input type='text' required id='email' ref={emailInputRef} />

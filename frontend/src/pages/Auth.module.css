@@ -1,8 +1,14 @@
-.authcontent{
-    width: 50%;
+.authcontent {
+    /* width: 50%; */
+    width: 30rem;
+    max-width: 80%;
+    margin: 5rem auto;
+    
 }
+
 .form {
     padding: 1rem;
+    text-align: left;
 }
 
 .control {
@@ -28,23 +34,26 @@
 .actions {
     margin-top: 2rem 1rem;
     /* text-align: right; */
-    align-items: center;
+    /* align-items: center; */
+    display: flex;
 }
 
 .actions button {
     margin: 2rem;
     font: inherit;
     cursor: pointer;
-    background-color: rgb(25, 166, 194);
+    background-color: #5101d1;
     color: white;
     padding: 0.5rem 1.5rem;
-    border: 1px solid rgb(25, 166, 194);
+    border: 1px solid #5101d1;
     border-radius: 4px;
     font-weight: bold;
+    color: white;
 }
 
 .actions button:hover,
 .actions button:active {
-    background-color: rgb(10, 83, 98);
-    border-color: rgb(10, 83, 98);
+    background-color: #2a0567;
+    border-color: #2a0567;
+    color: white;
 }
