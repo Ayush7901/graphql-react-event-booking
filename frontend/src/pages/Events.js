@@ -5,9 +5,14 @@ import Modal from '../components/Modal/Modal';
 import Backdrop from '../components/Modal/Backdrop';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import AuthContext from '../context/auth-context';
+import EventList from '../components/Events/EventList';
+import Spinner from '../components/Spinner/Spinner';
+import dateformat from 'dateformat'
 const EventsPage = () => {
     const authContext = useContext(AuthContext);
     const [showModal, setShowModal] = useState(false);
+    const [isLoading, setLoading] = useState(true);
+    const [selectedEvent, setEvent] = useState(null);
     const titleRef = useRef();
     const dateRef = useRef();
     const descriptionRef = useRef();
@@ -16,6 +21,7 @@ const EventsPage = () => {
     const [events, setEvents] = useState([]);
 
     const fetchEvents = async () => {
+        setLoading(true);
         let requestBody;
         const token = authContext.authState.token;
         // eslint-disable-next-line
@@ -30,6 +36,7 @@ const EventsPage = () => {
                     date
                     price
                     creator{
+                        _id
                         email
                     }
                 }
@@ -50,21 +57,38 @@ const EventsPage = () => {
             console.log(resData);
             const eventsData = resData.data.events;
             setEvents(eventsData.map(event => {
-                return <li className={classes.eventsListItem} key = {event._id}>{event.title}</li>;
-            }))
+                return event;
+            }));
+
 
         }
         catch (err) {
             console.log(err);
         }
+        setLoading(false);
     }
 
     useEffect(() => {
         fetchEvents();
     }, []);
 
+    const showDetailHandler = eventId => {
+        const event = events.find(e => {
+            if (e._id == eventId) return e;
+        });
+        console.log(event);
+        setEvent(event);
+
+    }
+
     const onCancel = () => {
         setShowModal(false);
+        setEvent(null);
+    }
+
+    const bookingHandler = () => {
+        setShowModal(false);
+        setEvent(null);
     }
 
     const onConfirm = async () => {
@@ -89,15 +113,9 @@ const EventsPage = () => {
                 createEvent(eventInput : {title : \"${title}\" , price : ${price} , description : \"${description}\" , date : \"${date}\"}){
                     title
                     description
-                    creator{
-                        email
-                        createdEvents{
-                            title
-                            creator{
-                                password
-                            }
-                        }
-                    }
+                    _id
+                    price
+                    date
                 }
             }
             ` ,
@@ -114,7 +132,21 @@ const EventsPage = () => {
             console.log(result);
             const resData = await result.json();
             console.log(resData);
-            fetchEvents();
+            const eventData = resData.data.createEvent;
+            const event = {
+                title: eventData.title,
+                price: eventData.price,
+                date: eventData.date,
+                description: eventData.description,
+                _id: eventData._id,
+                creator: {
+                    _id: authContext.authState.userId,
+                }
+            }
+            const eventList = [];
+            events.map(event => eventList.push(event));
+            eventList.push(event);
+            setEvents(eventList);
         }
         catch (err) {
             console.log(err);
@@ -129,9 +161,9 @@ const EventsPage = () => {
     return (
 
         <React.Fragment>
-            {showModal && <Backdrop />}
+            {(showModal || selectedEvent) && <Backdrop />}
             {showModal &&
-                <Modal title="Add your event" canCancel={true} canConfirm={true} onCancel={onCancel} onConfirm={onConfirm}>
+                <Modal title="Add your event" canCancel={true} canConfirm={true} onCancel={onCancel} onConfirm={onConfirm} confirmText="Confirm" >
                     <form className='form'>
                         <div className='form-control'>
                             <label htmlFor='title'>Title</label>
@@ -167,10 +199,22 @@ const EventsPage = () => {
 
 
             </div>}
+            {
+                selectedEvent &&
+                <Modal title={selectedEvent.title} onCancel={onCancel} canCancel={true} canConfirm={true} onConfirm={bookingHandler} confirmText="Book" >
+                    <h1>{selectedEvent.title}</h1>
+                    <h2>${selectedEvent.price} </h2> - <h2>{dateformat(new Date(selectedEvent.date))}</h2>
+                    <p>{selectedEvent.description}</p>
+                </Modal>
+
+            }
             <section>
-                <ul className={classes.eventsList}>
-                    {events}
-                </ul>
+                {
+                    isLoading ? <Spinner />
+                        :
+                        <EventList events={events} authUserId={authContext.authState.userId} onViewDetail={showDetailHandler} />
+                }
+
             </section>
         </React.Fragment>
 
