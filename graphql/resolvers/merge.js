@@ -43,6 +43,7 @@ const transformEvent = event => {
 }
 
 const transformBooking = booking => {
+    // console.log(booking._doc)
     return {
         ...booking._doc,
         user: user.bind(this, booking._doc.user),

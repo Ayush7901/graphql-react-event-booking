@@ -64,13 +64,11 @@ const AuthPage = () => {
                     'Content-Type': 'application/json'
                 }
             });
-            console.log(result);
             // if (result.status !== 200 || result.status !== 201) {
             //     throw new Error('There was some issue !');
 
             // }
             const resData = await result.json();
-            console.log(resData);
             // if (resData.data.login.token) {
             //     this.context.login(resData.data.login.token, resData.data.login.userId, resData.data.login.tokenExpiration);
             // }

@@ -23,10 +23,7 @@ const EventsPage = () => {
     const fetchEvents = async () => {
         setLoading(true);
         let requestBody;
-        const token = authContext.authState.token;
-        // eslint-disable-next-line
         requestBody = {
-            // eslint-disable-next-line
             query: `
             query {
                 events{
@@ -49,12 +46,9 @@ const EventsPage = () => {
                 body: JSON.stringify(requestBody),
                 headers: {
                     'Content-Type': 'application/json',
-                    // 'Authorization': 'Bearer ' + token,
                 }
             });
-            console.log(result);
             const resData = await result.json();
-            console.log(resData);
             const eventsData = resData.data.events;
             setEvents(eventsData.map(event => {
                 return event;
@@ -73,10 +67,9 @@ const EventsPage = () => {
     }, []);
 
     const showDetailHandler = eventId => {
-        const event = events.find(e => {
-            if (e._id == eventId) return e;
-        });
-        console.log(event);
+        const event = events.find(e =>
+            (e._id === eventId)
+        );
         setEvent(event);
 
     }
@@ -86,7 +79,39 @@ const EventsPage = () => {
         setEvent(null);
     }
 
-    const bookingHandler = () => {
+    const bookingHandler = async () => {
+        let requestBody;
+        const token = authContext.authState.token;
+        requestBody = {
+            query: `
+            mutation{
+                bookEvent(eventId : "${selectedEvent._id}"){
+                    _id
+                    createdAt
+                    updatedAt
+                }
+            }
+            ` ,
+        };
+        try {
+            const result = await fetch('http://localhost:3001/graphql', {
+                method: 'POST',
+                body: JSON.stringify(requestBody),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token,
+                }
+            });
+            console.log(result);
+            const resData = await result.json();
+            const bookingData = resData.data.bookEvent;
+            console.log(bookingData);
+        }
+        catch (err) {
+            console.log(err);
+        }
+
+
         setShowModal(false);
         setEvent(null);
     }
@@ -105,12 +130,10 @@ const EventsPage = () => {
 
         let requestBody;
         const token = authContext.authState.token;
-        // eslint-disable-next-line
         requestBody = {
-            // eslint-disable-next-line
             query: `
             mutation{
-                createEvent(eventInput : {title : \"${title}\" , price : ${price} , description : \"${description}\" , date : \"${date}\"}){
+                createEvent(eventInput : {title : "${title}" , price : ${price} , description : "${description}" , date : "${date}"}){
                     title
                     description
                     _id
@@ -129,9 +152,7 @@ const EventsPage = () => {
                     'Authorization': 'Bearer ' + token,
                 }
             });
-            console.log(result);
             const resData = await result.json();
-            console.log(resData);
             const eventData = resData.data.createEvent;
             const event = {
                 title: eventData.title,
