@@ -1,4 +1,5 @@
 import { useContext, useEffect, useState } from "react";
+import BookingList from "../components/Bookings/BookingList";
 import Spinner from "../components/Spinner/Spinner";
 import AuthContext from "../context/auth-context";
 
@@ -12,6 +13,52 @@ const BookingsPage = () => {
     useEffect(() => {
         fetchBookings();
     }, []);
+
+    const cancelBookingHandler = async bookingId => {
+        setLoading(true);
+        let requestBody;
+        const token = authContext.authState.token;
+        requestBody = {
+            query: `
+            mutation {
+                cancelBooking(bookingId : "${bookingId}"){
+                    title
+                    description
+                    date
+                }
+            }
+            ` ,
+        };
+        try {
+            const result = await fetch('http://localhost:3001/graphql', {
+                method: 'POST',
+                body: JSON.stringify(requestBody),
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + token,
+                }
+            });
+            const resData = await result.json();
+            // console.log(resData);
+            const canceledEvent = resData.data.cancelBooking;
+            console.log(canceledEvent);
+            const bookingsData = [];
+
+            bookings.map(booking => {
+                if (booking._id !== bookingId) bookingsData.push(booking);
+            });
+
+            setBookings(bookingsData);
+
+
+
+        }
+        catch (err) {
+            console.log(err);
+            // throw new Error('Here is the issue');
+        }
+        setLoading(false);
+    }
 
     const fetchBookings = async () => {
         setLoading(true);
@@ -43,7 +90,7 @@ const BookingsPage = () => {
             const resData = await result.json();
             // console.log(resData);
             const bookingsData = resData.data.bookings;
-            
+
             setBookings(bookingsData.map(booking => {
                 return booking;
             }));
@@ -61,7 +108,7 @@ const BookingsPage = () => {
         <div>
             {isLoading ? <Spinner />
                 :
-                <ul>{bookings.map(booking => <li key = {booking._id}>{booking.event.title} - {new Date(booking.event.date).toLocaleDateString()}</li>)}</ul>}
+                <BookingList bookingList={bookings} onCancel={cancelBookingHandler} />}
         </div>
     );
 };
