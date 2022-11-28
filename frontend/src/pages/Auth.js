@@ -35,25 +35,29 @@ const AuthPage = () => {
             return;
         }
         let requestBody;
-
+        // another way to write query
         requestBody = {
             query: isLogin ? `
-            query{
-                login(email :"${enteredEmail}",password : "${enteredPassword}"){
+            query Login($email : String!, $password: String!){
+                login(email : $email,password : $password){
                   token
                   tokenExpiration
                   userId
                 }
               }
             `: `
-            mutation {
-                createUser(userInput :{email : "${enteredEmail}", password : "${enteredPassword}"}){
+            mutation SignUp($email : String!, $password: String!){
+                createUser(userInput :{email : $email, password : $password}){
                   _id
                   email
                 }
               }
               
             ` ,
+            variables: {
+                email: enteredEmail,
+                password: enteredPassword
+            }
         };
         try {
             // if we directly send a request like this it fails we have to add few more headers according to CORS policy 
