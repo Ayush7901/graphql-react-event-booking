@@ -1,5 +1,7 @@
-import { useContext, useEffect, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import BookingList from "../components/Bookings/BookingList";
+import BookingsChart from "../components/Bookings/BookingsChart/BookingsChart";
+import BookingsTabs from "../components/Bookings/BookingsTabs/BookingsTabs";
 import Spinner from "../components/Spinner/Spinner";
 import AuthContext from "../context/auth-context";
 
@@ -7,6 +9,7 @@ const BookingsPage = () => {
 
     const [isLoading, setLoading] = useState(true);
     const [bookings, setBookings] = useState([]);
+    const [displayTypeState, setDisplayType] = useState('list');
     const authContext = useContext(AuthContext);
 
 
@@ -72,6 +75,7 @@ const BookingsPage = () => {
                     event{
                         title
                         date
+                        price
                     }
                     createdAt
                 }
@@ -104,11 +108,38 @@ const BookingsPage = () => {
         setLoading(false);
     }
 
+    const displayTypeHandler = displayType => {
+        if (displayType === 'list') {
+            setDisplayType('list');
+        }
+        else {
+            setDisplayType('chart');
+        }
+    }
+
     return (
         <div>
             {isLoading ? <Spinner />
                 :
-                <BookingList bookingList={bookings} onCancel={cancelBookingHandler} />}
+                <React.Fragment>
+                    <BookingsTabs
+                        displayTypeHandler={displayTypeHandler}
+                        activeOutputType={displayTypeState}
+                        bookings={bookings}
+                    />
+                    <div>
+                        {displayTypeState === 'list' ?
+                            <BookingList
+                                bookingList={bookings}
+                                onCancel={cancelBookingHandler}
+                            /> :
+                            <BookingsChart
+                                bookings={bookings}
+                            />
+                        }
+                    </div>
+                </React.Fragment>
+            }
         </div>
     );
 };
