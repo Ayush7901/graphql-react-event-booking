@@ -21,9 +21,22 @@ ChartJS.register(
     Legend
 );
 
-export const options = {
+const options = {
     responsive: true,
-    
+    scales: {
+
+        yAxes: [{
+            ticks: {
+                beginAtZero: false,
+                min: 0,
+                stepSize: 1,
+                callback: function (value) {
+                    return `${value}`
+                }
+            }
+        }]
+    },
+
     plugins: {
         legend: {
             position: 'top',

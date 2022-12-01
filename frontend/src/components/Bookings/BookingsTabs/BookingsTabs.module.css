@@ -1,9 +1,9 @@
-.bookingsControl{
+.bookingsControl {
     text-align: center;
     padding: 0.5rem;
 }
 
-.bookingsControl button{
+.bookingsControl button {
     font: inherit;
     border: none;
     background: transparent;
@@ -13,8 +13,9 @@
     cursor: pointer;
 }
 
-.bookingsControl button:active{
+.bookingsControl button:focus,
+button:active {
     border-bottom-color: #5101d1;
-    color : #5101d1;
+    color: #5101d1;
 
 }

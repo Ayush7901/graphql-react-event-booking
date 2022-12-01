@@ -222,9 +222,10 @@ const EventsPage = () => {
             </div>}
             {
                 selectedEvent &&
-                <Modal title={selectedEvent.title} onCancel={onCancel} canCancel={true} canConfirm={true} onConfirm={bookingHandler} confirmText="Book" >
+                <Modal className={classes.modalControl} title={selectedEvent.title} onCancel={onCancel} canCancel={true} canConfirm={true} onConfirm={bookingHandler} confirmText="Book" >
                     <h1>{selectedEvent.title}</h1>
-                    <h2>${selectedEvent.price} </h2> - <h2>{dateformat(new Date(selectedEvent.date))}</h2>
+                    <h3>{selectedEvent.price}₹ - {dateformat(new Date(selectedEvent.date))} </h3>
+
                     <p>{selectedEvent.description}</p>
                 </Modal>
 
